@@ -7,8 +7,23 @@ interface ChatMessageProps {
   message: ChatMessageType;
 }
 
+/**
+ * Convert NCT IDs in parentheses to clickable markdown links
+ * Example: (NCT12345678) -> [(NCT12345678)](/trials/NCT12345678)
+ */
+function makeNctIdsClickable(text: string): string {
+  const nctPattern = /\(NCT\d{8}\)/g;
+  return text.replace(nctPattern, (match) => {
+    const nctId = match.slice(1, -1); // Remove parentheses
+    return `[(${nctId})](/trials/${nctId})`;
+  });
+}
+
 export default function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
+
+  // Pre-process message content to make NCT IDs clickable
+  const processedContent = makeNctIdsClickable(message.content);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
@@ -63,9 +78,22 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                   {children}
                 </code>
               ),
+              // Links (for NCT IDs and other links)
+              a: ({ href, children }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`underline font-medium hover:opacity-80 transition-opacity ${
+                    isUser ? "text-blue-100" : "text-blue-600"
+                  }`}
+                >
+                  {children}
+                </a>
+              ),
             }}
           >
-            {message.content}
+            {processedContent}
           </ReactMarkdown>
         </div>
 

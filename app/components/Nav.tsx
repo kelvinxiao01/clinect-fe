@@ -2,14 +2,20 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { signOut } from "@/lib/auth";
 import { logout } from "@/lib/api";
 
 export default function Nav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
+      // Sign out from Firebase
+      await signOut();
+      // Clear backend session
       await logout();
       router.push("/login");
     } catch (err) {
@@ -19,9 +25,15 @@ export default function Nav() {
 
   const navItems = [
     { href: "/search", label: "Search" },
+    { href: "/smart-match", label: "Smart Match" },
     { href: "/saved", label: "Saved Trials" },
     { href: "/profile", label: "Profile" },
   ];
+
+  // Get display name from Firebase user
+  const displayName = user?.isAnonymous
+    ? "Guest"
+    : user?.email || user?.displayName || "User";
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -49,12 +61,15 @@ export default function Nav() {
             </div>
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">{displayName}</span>
+            <button
+              onClick={handleLogout}
+              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </nav>

@@ -3,17 +3,13 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  signInWithEmail,
-  signInWithGoogle,
-  signInAsGuest,
-  getIdToken,
-} from "@/lib/auth";
+import { signUpWithEmail, signInWithGoogle, getIdToken } from "@/lib/auth";
 import { firebaseLogin } from "@/lib/api";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -30,7 +26,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleEmailSignIn = async (e: FormEvent) => {
+  const handleEmailSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -39,20 +35,30 @@ export default function LoginPage() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await signInWithEmail(email, password);
+      await signUpWithEmail(email, password);
       await handleBackendLogin();
       router.push("/search");
     } catch (err: any) {
-      setError(err.message || "Failed to sign in");
+      setError(err.message || "Failed to create account");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignUp = async () => {
     setError("");
     setLoading(true);
 
@@ -61,22 +67,7 @@ export default function LoginPage() {
       await handleBackendLogin();
       router.push("/search");
     } catch (err: any) {
-      setError(err.message || "Failed to sign in with Google");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGuestSignIn = async () => {
-    setError("");
-    setLoading(true);
-
-    try {
-      await signInAsGuest();
-      await handleBackendLogin();
-      router.push("/search");
-    } catch (err: any) {
-      setError(err.message || "Failed to continue as guest");
+      setError(err.message || "Failed to sign up with Google");
     } finally {
       setLoading(false);
     }
@@ -87,13 +78,13 @@ export default function LoginPage() {
       <div className="max-w-md w-full px-6">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Clinect
+            Create Account
           </h1>
           <p className="text-sm text-gray-600 mb-8">
-            Clinical Trial Patient Matching Platform
+            Sign up for Clinect to find clinical trials
           </p>
 
-          <form onSubmit={handleEmailSignIn}>
+          <form onSubmit={handleEmailSignUp}>
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -113,7 +104,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -126,7 +117,25 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your password"
+                placeholder="At least 6 characters"
+                disabled={loading}
+              />
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Re-enter password"
                 disabled={loading}
               />
             </div>
@@ -142,7 +151,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-3"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Creating account..." : "Sign Up"}
             </button>
           </form>
 
@@ -156,9 +165,9 @@ export default function LoginPage() {
           </div>
 
           <button
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignUp}
             disabled={loading}
-            className="w-full bg-white text-gray-700 border border-gray-300 py-2 px-4 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 mb-3"
+            className="w-full bg-white text-gray-700 border border-gray-300 py-2 px-4 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -178,24 +187,13 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Sign in with Google
-          </button>
-
-          <button
-            onClick={handleGuestSignIn}
-            disabled={loading}
-            className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Continue as Guest
+            Sign up with Google
           </button>
 
           <p className="mt-6 text-sm text-gray-600 text-center">
-            Don't have an account?{" "}
-            <Link
-              href="/signup"
-              className="text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Sign up
+            Already have an account?{" "}
+            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+              Sign in
             </Link>
           </p>
         </div>

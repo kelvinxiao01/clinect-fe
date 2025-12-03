@@ -2,19 +2,24 @@
 
 export interface User {
   id: number;
-  username: string;
+  username?: string;
+  firebase_uid?: string;
+  email?: string;
   created_at: string;
 }
 
 export interface LoginResponse {
   success: boolean;
   username?: string;
+  email?: string;
   error?: string;
 }
 
 export interface CurrentUserResponse {
   logged_in: boolean;
   username?: string;
+  email?: string;
+  firebase_uid?: string;
 }
 
 export interface MedicalHistory {

@@ -117,63 +117,65 @@ export default function SmartMatchPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Smart Match Chat
-        </h1>
-        <p className="text-gray-600">
-          Chat with our AI assistant to find clinical trials tailored to your
-          needs using intelligent graph-based matching.
-        </p>
-      </div>
-
-      {/* Quick Action Button */}
-      <div className="mb-4">
-        <button
-          onClick={handleUseMedicalHistory}
-          disabled={isTyping}
-          className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
-        >
-          Use My Medical History
-        </button>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 text-sm">{error}</p>
-        </div>
-      )}
-
-      {/* Chat Container */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex flex-col h-[600px]">
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.map((msg, index) => (
-            <ChatMessage key={index} message={msg} />
-          ))}
-
-          {/* Typing Indicator */}
-          {isTyping && <TypingIndicator />}
-
-          {/* Scroll anchor */}
-          <div ref={messagesEndRef} />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+            Smart Match Chat
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Chat with our AI assistant to find clinical trials tailored to your
+            needs using intelligent graph-based matching.
+          </p>
         </div>
 
-        {/* Input Area */}
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
-          <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
+        {/* Quick Action Button */}
+        <div className="mb-4">
+          <button
+            onClick={handleUseMedicalHistory}
+            disabled={isTyping}
+            className="px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
+          >
+            Use My Medical History
+          </button>
         </div>
-      </div>
 
-      {/* Help Text */}
-      <div className="mt-4 text-sm text-gray-600 text-center">
-        <p>
-          Tip: You can press <kbd className="px-2 py-1 bg-gray-200 rounded">Enter</kbd> to send, or{" "}
-          <kbd className="px-2 py-1 bg-gray-200 rounded">Shift+Enter</kbd> for a new line.
-        </p>
+        {/* Error Display */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Chat Container */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-[600px]">
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {messages.map((msg, index) => (
+              <ChatMessage key={index} message={msg} />
+            ))}
+
+            {/* Typing Indicator */}
+            {isTyping && <TypingIndicator />}
+
+            {/* Scroll anchor */}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="border-t border-gray-200 p-4 bg-gray-50">
+            <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
+          </div>
+        </div>
+
+        {/* Help Text */}
+        <div className="mt-4 text-sm text-gray-600 text-center">
+          <p>
+            Tip: You can press <kbd className="px-2 py-1 bg-gray-200 rounded">Enter</kbd> to send, or{" "}
+            <kbd className="px-2 py-1 bg-gray-200 rounded">Shift+Enter</kbd> for a new line.
+          </p>
+        </div>
       </div>
     </div>
   );

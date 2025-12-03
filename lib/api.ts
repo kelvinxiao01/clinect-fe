@@ -20,6 +20,24 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 // Authentication API
 // ============================================================================
 
+/**
+ * Firebase Authentication - Send Firebase ID token to backend for verification
+ * Backend will verify the token and create a session
+ */
+export async function firebaseLogin(idToken: string): Promise<LoginResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/firebase-login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", // Important for session cookies
+    body: JSON.stringify({ idToken }),
+  });
+
+  return response.json();
+}
+
+/**
+ * Legacy username-based login (deprecated - use firebaseLogin instead)
+ */
 export async function login(username: string): Promise<LoginResponse> {
   const response = await fetch(`${API_BASE_URL}/api/login`, {
     method: "POST",

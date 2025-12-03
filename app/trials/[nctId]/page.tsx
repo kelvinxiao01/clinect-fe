@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getTrialDetails } from "@/lib/api";
 import { ProtocolSection } from "@/lib/types";
 import SaveButton from "@/app/components/SaveButton";
+import RelatedTrials from "@/app/components/RelatedTrials";
 
 export default function TrialDetailsPage() {
   const params = useParams();
@@ -221,6 +222,8 @@ export default function TrialDetailsPage() {
             </Section>
           )}
         </div>
+
+        <RelatedTrials nctId={nctId} />
       </div>
     </div>
   );

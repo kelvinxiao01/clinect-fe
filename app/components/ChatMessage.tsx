@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@/lib/types/chat";
 import MatchScoreBadge from "./MatchScoreBadge";
 
@@ -19,7 +20,54 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         }`}
       >
         {/* Message content */}
-        <div className="whitespace-pre-wrap break-words">{message.content}</div>
+        <div className="prose prose-sm max-w-none">
+          <ReactMarkdown
+            components={{
+              // Paragraphs
+              p: ({ children }) => (
+                <p className={`mb-2 last:mb-0 ${isUser ? "text-white" : "text-gray-900"}`}>
+                  {children}
+                </p>
+              ),
+              // Unordered lists
+              ul: ({ children }) => (
+                <ul className={`list-disc list-inside mb-2 space-y-1 ${isUser ? "text-white" : "text-gray-900"}`}>
+                  {children}
+                </ul>
+              ),
+              // List items
+              li: ({ children }) => (
+                <li className={`${isUser ? "text-white" : "text-gray-900"}`}>
+                  {children}
+                </li>
+              ),
+              // Bold text
+              strong: ({ children }) => (
+                <strong className={`font-semibold ${isUser ? "text-white" : "text-gray-900"}`}>
+                  {children}
+                </strong>
+              ),
+              // Italic text
+              em: ({ children }) => (
+                <em className={`italic ${isUser ? "text-white" : "text-gray-900"}`}>
+                  {children}
+                </em>
+              ),
+              // Code blocks
+              code: ({ children }) => (
+                <code className={`px-1.5 py-0.5 rounded text-sm font-mono ${
+                  isUser
+                    ? "bg-blue-700 text-white"
+                    : "bg-gray-200 text-gray-900"
+                }`}>
+                  {children}
+                </code>
+              ),
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
+        </div>
 
         {/* Trial results (if any) */}
         {message.trials && message.trials.length > 0 && (
